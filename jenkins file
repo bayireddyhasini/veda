@@ -1,0 +1,27 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('clone scm') {
+            steps {
+                echo 'cloning code from github'
+				git branch: 'main', url: 'https://github.com/devopstraininghub/webapp1.git'
+				
+            }
+        }
+		stage('build artifact') {
+            steps {
+                echo 'building artifact with maven build tool'
+				sh 'mvn clean install'
+				
+            }
+        }
+		
+		stage('deploy') {
+            steps {
+                echo 'deploy to tomcat application server'
+				deploy adapters: [tomcat9(credentialsId: 'tomcat-credentials', path: '', url: 'http://44.202.90.56:8081/')], contextPath: 'facebook', war: '**/*.war'
+            }
+        }
+    }
+}
